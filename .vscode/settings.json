@@ -1,0 +1,20 @@
+{
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true
+    },
+    "hide-files.files": [],
+    "[latex]": {
+        "editor.fontFamily": "'IBM Plex Sans', 'Segoe UI', 'Noto Sans SC', Arial, sans-serif",
+        "editor.fontSize": 15,
+        "editor.fontLigatures": false,
+        "editor.wordWrap": "on"
+    },
+    "[bibtex]": {
+        "editor.fontFamily": "'IBM Plex Sans', 'Segoe UI', 'Noto Sans SC', Arial, sans-serif",
+        "editor.wordWrap": "on"
+    }
+}

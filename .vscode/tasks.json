@@ -1,0 +1,110 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build HTML (default)",
+      "type": "process",
+      "command": "python",
+      "args": [
+        "${workspaceFolder}/build.py",
+        "html"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Watch: rebuild HTML on every save",
+      "type": "process",
+      "command": "python",
+      "args": [
+        "${workspaceFolder}/build.py",
+        "watch"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": [],
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    {
+      "label": "Watch: rebuild PDF + HTML on every save",
+      "type": "process",
+      "command": "python",
+      "args": [
+        "${workspaceFolder}/build.py",
+        "watch",
+        "all"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": [],
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    {
+      "label": "Build all (narrow PDF + HTML)",
+      "type": "process",
+      "command": "python",
+      "args": [
+        "${workspaceFolder}/build.py",
+        "all"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build narrow PDF only",
+      "type": "process",
+      "command": "python",
+      "args": [
+        "${workspaceFolder}/build.py",
+        "pdf"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Clean generated files",
+      "type": "process",
+      "command": "python",
+      "args": [
+        "${workspaceFolder}/build.py",
+        "clean"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}

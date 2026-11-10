@@ -1,0 +1,192 @@
+/* Narrow-pane reading style for the HTML build.
+   Goal: readable at ANY pane width without zooming, so type size is fixed in
+   rem/px and never scales with the viewport. */
+
+:root {
+  --fg: #16181d;
+  --bg: #ffffff;
+  --muted: #5c6270;
+  --rule: #dfe2e8;
+  --accent: #1a5fb4;
+  --measure: 40rem;
+}
+
+/* Light is the default, always. Dark is opt-in via ?theme=dark: a preview pane
+   (VS Code webview, dark editor) reports prefers-color-scheme: dark, which used
+   to flip this reading page to inverted colours — the opposite of the white PDF
+   you are reading it against. ?theme=auto opts back into following the OS. */
+html[data-theme="dark"] {
+  --fg: #e6e8ee;
+  --bg: #16181d;
+  --muted: #a0a6b4;
+  --rule: #32363f;
+  --accent: #6ea8fe;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-theme="auto"] {
+    --fg: #e6e8ee;
+    --bg: #16181d;
+    --muted: #a0a6b4;
+    --rule: #32363f;
+    --accent: #6ea8fe;
+    color-scheme: dark;
+  }
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  background: var(--bg);
+  color-scheme: light;
+}
+
+body {
+  color: var(--fg);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.55;
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 1.25rem 1.15rem 5rem;
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+
+/* ---- title block -------------------------------------------------- */
+header#title-block-header {
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.9rem;
+  margin-bottom: 1.6rem;
+}
+
+h1.title {
+  font-size: 1.5rem;
+  line-height: 1.22;
+  margin: 0 0 0.55rem;
+  letter-spacing: -0.01em;
+}
+
+header .author,
+header .date,
+header .keywords {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0.15rem 0;
+}
+
+header .author p,
+header .affiliation {
+  margin: 0.1rem 0;
+  font-size: 0.82rem;
+}
+
+div.abstract {
+  font-size: 0.94rem;
+  border-left: 2px solid var(--rule);
+  padding-left: 0.8rem;
+  margin: 1rem 0 1.4rem;
+}
+
+div.abstract p:first-child::before {
+  content: "Abstract — ";
+  color: var(--muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+}
+
+/* ---- headings ----------------------------------------------------- */
+h1, h2, h3, h4 {
+  font-weight: 650;
+  line-height: 1.25;
+  margin: 1.7em 0 0.45em;
+  page-break-after: avoid;
+}
+
+h1 { font-size: 1.28rem; }
+h2 { font-size: 1.14rem; }
+h3 { font-size: 1.02rem; }
+h4 { font-size: 0.96rem; font-style: italic; font-weight: 600; }
+
+/* ---- text --------------------------------------------------------- */
+p { margin: 0.75em 0; }
+strong { font-weight: 650; }
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+blockquote {
+  margin: 1em 0;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--rule);
+  color: var(--muted);
+}
+
+/* ---- figures & tables --------------------------------------------- */
+figure {
+  margin: 1.3em 0;
+  text-align: center;
+}
+
+figure img,
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+figcaption,
+.caption {
+  font-size: 0.87rem;
+  color: var(--muted);
+  text-align: left;
+  margin-top: 0.5em;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  margin: 1.1em 0;
+  /* a fixed-width manuscript table can still be too wide: scroll it locally
+     instead of forcing the whole page to scroll sideways */
+  display: block;
+  overflow-x: auto;
+}
+
+th, td {
+  border-bottom: 1px solid var(--rule);
+  padding: 0.32em 0.5em;
+  text-align: left;
+  vertical-align: top;
+}
+
+thead th { border-bottom: 2px solid var(--rule); }
+
+/* ---- maths -------------------------------------------------------- */
+math { font-size: 1.02em; }
+mtext, mi, mn, mo { font-family: "Cambria Math", "Latin Modern Math", serif; }
+
+/* ---- references --------------------------------------------------- */
+div#refs,
+div.references {
+  margin-top: 2.2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.9rem;
+}
+
+div#refs p,
+div.references p {
+  margin: 0.45em 0;
+  padding-left: 1.4rem;
+  text-indent: -1.4rem;
+}
+
+/* ---- print -------------------------------------------------------- */
+@media print {
+  body { max-width: none; padding: 0; font-size: 10.5pt; }
+  a { color: inherit; border: 0; }
+}

@@ -12,6 +12,9 @@ The ideal template should be able to switch between these two manuscript layouts
 
 ## Use
 
+Day-to-day usage of the reading builds (how to build, where to change the page
+size / font size / theme): see [USAGE.md](USAGE.md).
+
 To use, just clone this repo and import into Overleaf or a directory on your own computer to use a local LaTeX installation.
 The following files and folders are not required: `img`, `examples`, `README.md`, `LICENSE`.
 
@@ -21,6 +24,89 @@ If they are not required, comment the appropriate lines in `00_Article_Merge.tex
 
 Tested on Overleaf - TeXLive 2025 with pdfLaTeX compiler.
 
+
+## Narrow preview version (side-by-side writing)
+
+When you write with the compiled PDF open next to the source (a vertical split
+narrower than a quarter of the screen), a full A4 page scaled to fit is unreadable.
+The class therefore has a `narrow` option: it typesets the same manuscript on a
+110 mm x 180 mm single-column page, so fit-to-width stays at about 100% and the
+text keeps its designed size.
+
+`00_Article_Narrow.tex` is the master file for it:
+
+```latex
+\documentclass[submit,narrow]{theme/bioRxiv}
+```
+
+Build with:
+
+```bash
+python build.py all          # narrow PDF + HTML (or: latexmk -pdf 00_Article_Narrow.tex)
+```
+
+What `narrow` changes — and only when the option is given, the preprint and
+submission layouts are untouched:
+
+- page 110 mm x 180 mm, 6 mm side margins, single column
+- no line numbers, no forced page break before every section, hyphenation kept on
+  (a short measure needs it to avoid rivers of white space)
+- smaller title/heading/caption sizes, minimal footer (page number only)
+- images without an explicit width are capped to the column width
+- `\raggedbottom`, because stretched vertical glue looks bad on a short page
+
+For a table that is too wide, wrap the table body in `\narrowfit{...}` (provided by
+`adjustbox` in `00_Article_Narrow.tex`) so it scales down to the column instead of
+running off the page. To change the page size, edit the `geometry` options in the
+`narrow` branch of `theme/bioRxiv.cls`.
+
+## HTML reading version (reflows to any pane width)
+
+The narrow PDF has a fixed page; the HTML version reflows instead, so one file
+stays readable at *any* pane width — a quarter-screen split, a browser tab, a
+phone — with no recompiling and no zooming.
+
+```bash
+python build.py        # HTML only - the default, ~1 s
+python build.py all    # PDF first (numbers \ref/\cref), then the HTML
+```
+
+Output: `00_Article_Narrow.html`, a single self-contained file (CSS and images
+embedded), so it opens straight from disk in VS Code's Simple Browser / Live
+Preview or any browser. `python build.py clean` removes it.
+
+Pipeline and what it does:
+
+- `tools/tex2html.py` inlines the `\include`d sections (pandoc does not follow
+  `\include`), lifts the title/author/abstract/keywords block into pandoc
+  metadata, unwraps `\narrowfit{...}`, drops PDF-only plumbing (`\lfoot`,
+  `\setcounter`, `\fancyhead`, ...) and replaces the demo `\lipsum`.
+- cross-references are taken from the LaTeX `.aux` files, so
+  `Figure \ref{...}` prints the number LaTeX assigned — including `S1`/`SV1`
+  for supplementary items. Without `.aux` files you get `[label]` instead.
+- pandoc (>= 3) converts with `--citeproc` + `refs.bib` for citations and MathML
+  for equations, then `html/manuscript.css` styles it: fixed 16 px type (never
+  scaled by the viewport), `hyphens: auto`, `max-width` measure, tables that
+  scroll locally instead of pushing the page sideways, dark-mode support.
+
+Colour scheme: the page is **light by default**, on purpose — a preview pane in a
+dark editor (VS Code webview, Live Preview) reports `prefers-color-scheme: dark`,
+and letting the CSS follow it turns the paper black while you are reading it next
+to a white PDF. Dark is opt-in through the URL:
+
+| URL | Result |
+| --- | --- |
+| `.../00_Article_Narrow.html` | white paper (default) |
+| `.../00_Article_Narrow.html?theme=dark` | dark, explicit |
+| `.../00_Article_Narrow.html?theme=auto` | follow the OS/editor setting |
+
+Known differences from the PDF layouts (inherent to the pandoc route):
+
+- figure/table captions are printed without a number ("Figure 1." is not
+  generated); the in-text references still carry the correct numbers;
+- `\SI`/`\si` units are expanded by a small shim, not by siunitx, so unusual
+  unit macros may come out as their raw name;
+- no line numbers, no figure floats — content order is source order.
 
 ## Contributions
 
