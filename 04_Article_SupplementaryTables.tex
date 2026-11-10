@@ -23,13 +23,16 @@
 \begin{table}[!h]
     \centering
     \small
+    %% \narrowfit scales the table to the line width on the narrow-screen page
+    %% and is a no-op in the preprint/submission layouts
+    \narrowfit{%
     \begin{tabular}{p{3cm}|p{2.2cm} p{2.2cm} p{2.2cm} p{2.2cm} p{2.2cm}}
         Movie & US Release Date & Director & Screenwriter(s) & Story by & Producer\\
         \hline
         Episode IV – A New Hope & May 25, 1977 & \multicolumn{3}{c}{George Lucas} & Gary Kurtz\\
         Episode V – The Empire Strikes Back & May 21, 1980 & Irvin Kershner & Leigh Brackett and Lawrence Kasdan & George Lucas & Gary Kurtz\\
         Episode VI – Return of the Jedi & May 25, 1983 & Richard Marquand & Lawrence Kasdan and George Lucas & George Lucas & Howard Kazanjian\\
-    \end{tabular}
+    \end{tabular}}
     \caption{\textbf{Original ``Star Wars'' Trilogy}\\
     Extracted from \url{https://en.wikipedia.org/wiki/List_of_Star_Wars_films}.}
     \label{supptab:st1}

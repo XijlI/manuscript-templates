@@ -1,0 +1,50 @@
+%% Narrow-screen preview build.
+%% Same manuscript, re-flowed onto a ~110 mm wide single-column page so it
+%% stays legible when a PDF viewer shows it fit-to-width in a pane that is
+%% narrower than a quarter of the screen (side-by-side writing/preview).
+%%
+%% Build:  ./build-narrow.sh     (or: latexmk -pdf 00_Article_Narrow.tex)
+%%
+%% The other two layouts are unchanged:
+%%   \documentclass[twocolumn]{theme/bioRxiv}   % bioRxiv preprint look
+%%   \documentclass[submit]{theme/bioRxiv}      % journal submission look
+\documentclass[submit,narrow]{theme/bioRxiv}
+
+%% forces sans serif
+\renewcommand\familydefault{\sfdefault}
+
+%% for this example - not needed for manuscript
+\usepackage{lipsum}
+
+%% setup specific to this preprint -- add or remove as you need.
+\hyphenation{empire} % prevents word "empire" being split across lines
+\sisetup{range-units = single,
+        separate-uncertainty = true,
+        multi-part-units = single,
+        range-phrase = --} % units setup
+\usepackage{multirow} % allows merging of cells in tables
+
+%% `\narrowfit{...}` (defined by the class) scales a too-wide table down to the
+%% column; it is a no-op in the other layouts.
+
+%% reading aids for a narrow pane: real PDF outline + clickable links
+\hypersetup{
+  pdftitle={Description of an amazing research project},
+  pdfauthor={First Scientist; Second Doctor; Third Professor},
+  bookmarksnumbered=true,
+  bookmarksopen=true,
+  bookmarksopenlevel=1,
+  pdfstartview={FitH},
+}
+
+%% the document starts here
+
+\begin{document}
+
+%% comment out any files that you don't want to include as sections
+\include{01_Article_MainText}
+\include{02_Article_Supplementary}
+\include{03_Article_SupplementaryVideos}
+\include{04_Article_SupplementaryTables}
+
+\end{document}

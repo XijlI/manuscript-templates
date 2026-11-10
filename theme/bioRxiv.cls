@@ -20,6 +20,9 @@
 \newif\if@times         \@timesfalse
 \newif\if@helvet         \@helvetfalse
 \newif\if@submit        \@submitfalse
+%% narrow-page layout for side-by-side preview: see the geometry block below.
+%% Independent of `submit`/`twocolumn`; has no effect unless used.
+\newif\if@narrow        \@narrowfalse
 
 %% Options
 \newif\ifbfabstract     \bfabstracttrue
@@ -35,6 +38,7 @@
 \DeclareOption{twocolumn}{\@tmptwocolumntrue}
 %\DeclareOption{onecolumn}{\@tmptwocolumnfalse}
 \DeclareOption{submit}{\@submittrue \@tmptwocolumnfalse}
+\DeclareOption{narrow}{\@narrowtrue}
 
 \ProcessOptions
 
@@ -51,10 +55,12 @@
 \RequirePackage[detect-all=true]{siunitx}
 \RequirePackage{textgreek}
 % for no hyphenation add [none] option
+% (narrow panes need hyphenation: a short measure plus no hyphenation gives
+%  huge inter-word gaps)
 \if@submit
-  \usepackage[none]{hyphenat}
+  \if@narrow\RequirePackage{hyphenat}\else\RequirePackage[none]{hyphenat}\fi
 \else
-  \usepackage{hyphenat}
+  \RequirePackage{hyphenat}
 \fi
 %% uncomment to reduce the spacing after a full-stop
 %\frenchspacing
@@ -79,10 +85,19 @@
 %\sidecaptionvpos{figure}{t}
 \RequirePackage[misc]{ifsym} % For the \Letter symbol
 \RequirePackage{bbding} % For the \Envelope symbol
-\RequirePackage[a4paper,
-                total={170mm,247mm},
-                left=20mm,
-                top=25mm]{geometry}
+\if@narrow
+  %% narrow page for side-by-side preview: ~110mm wide, readable at
+  %% fit-to-width in a pane narrower than a quarter of the screen
+  \RequirePackage[paperwidth=110mm,paperheight=180mm,
+                  left=6mm,right=6mm,
+                  top=7mm,bottom=12mm,
+                  headheight=10pt,headsep=3mm,footskip=6mm]{geometry}
+\else
+  \RequirePackage[a4paper,
+                  total={170mm,247mm},
+                  left=20mm,
+                  top=25mm]{geometry}
+\fi
 \RequirePackage[labelfont={bf,sf},%
                 labelsep=period,%
                 figurename=Figure]{caption}
@@ -90,7 +105,7 @@
 %% line numbers
 \if@submit
   \RequirePackage{lineno}
-  \linenumbers
+  \if@narrow\AtBeginDocument{\nolinenumbers}\else\linenumbers\fi
 \fi
 
 \PassOptionsToPackage{hyphens}{url}
@@ -190,7 +205,12 @@
 \newcommand{\shorttitle}[1]{\def\@shorttitle{#1}}
 \newcommand{\leadauthor}[1]{\def\@leadauthor{#1}}
 \newcommand{\footerfont}{\normalfont\sffamily\fontsize{7}{9} \selectfont}
-\newcommand{\titlefont}{\fontfamily{lmss}\bfseries\fontsize{18pt}{20pt}\selectfont}
+\if@narrow
+  %% narrower page: keep the title from eating the first screen
+  \newcommand{\titlefont}{\fontfamily{lmss}\bfseries\fontsize{14pt}{16pt}\selectfont}
+\else
+  \newcommand{\titlefont}{\fontfamily{lmss}\bfseries\fontsize{18pt}{20pt}\selectfont}
+\fi
 \newcommand{\dropcapfont}{\fontfamily{lmss}\bfseries\fontsize{22pt}{24pt}\selectfont}
 \if@submit
   \newcommand{\datesfont}{\normalfont\sffamily\fontsize{7}{9}\selectfont}
@@ -274,13 +294,36 @@
 \titlespacing*{\paragraph}{0pc}{1.5ex \@plus2pt \@minus1pt}{12pt}
 
 \if@submit
-  \let\oldsection\section
-  \renewcommand\section{\clearpage\oldsection}
+  \if@narrow\else
+    \let\oldsection\section
+    \renewcommand\section{\clearpage\oldsection}
+  \fi
+\fi
+
+%% narrow pages: smaller headings, tighter spacing above sections
+\if@narrow
+  \titleformat{\section}
+    {\large\sffamily\bfseries}
+    {}
+    {0em}
+    {Supplementary Note \thesection: #1}
+    []
+  \titleformat{name=\section,numberless}
+    {\large\sffamily\bfseries}
+    {}
+    {0em}
+    {#1}
+    []
+  \titlespacing*{\section}{0pc}{2.2ex \@plus3pt \@minus2pt}{3pt}
 \fi
 
 %% Figure caption style
 \if@submit
-  \DeclareCaptionFormat{smallformat}{\normalfont\sffamily\fontsize{9}{12}\selectfont#1#2#3}
+  \if@narrow
+    \DeclareCaptionFormat{smallformat}{\normalfont\sffamily\fontsize{8}{10}\selectfont#1#2#3}
+  \else
+    \DeclareCaptionFormat{smallformat}{\normalfont\sffamily\fontsize{9}{12}\selectfont#1#2#3}
+  \fi
 \else
   \DeclareCaptionFormat{smallformat}{\normalfont\sffamily\fontsize{7}{9}\selectfont#1#2#3}
 \fi
@@ -309,11 +352,13 @@
 \setlength{\bibsep}{0.0pt}
 \bibliographystyle{bxv_abbrvnat}
 \renewcommand{\bibsection}{} % Remove header
-\if@submit
+\if@narrow
+  \renewcommand\bibfont{\normalfont\sffamily\fontsize{8}{9}\selectfont} % set font to be sans serif
+\else\if@submit
   \renewcommand\bibfont{\normalfont\sffamily\fontsize{9}{10}\selectfont} % set font to be sans serif
 \else
   \renewcommand\bibfont{\normalfont\sffamily\fontsize{6}{8}\selectfont} % set font to be sans serif
-\fi
+\fi\fi
 
 \makeatletter
 \renewcommand\@biblabel[1]{ #1.} % Remove brackets from label
@@ -340,14 +385,20 @@
 \if@submit
   \def\@maketitle{\newpage
     \begin{flushleft}
-      \vskip0.2em{\Huge\bfseries\@title\par}\vskip1.0em%
-      {\lineskip.5em\large\@author\par}
+      \if@narrow
+        \vskip0.2em{\Large\bfseries\@title\par}\vskip0.7em%
+        {\lineskip.5em\normalsize\@author\par}
+      \else
+        \vskip0.2em{\Huge\bfseries\@title\par}\vskip1.0em%
+        {\lineskip.5em\large\@author\par}
+      \fi
     \end{flushleft}
       \par\vskip 1.4em}
 
   %% Abstract and keywords
   \def\abstract{\vspace{2em}
-    \ifbfabstract\normalsize\bfseries\else\footnotesize\fi}
+    \if@narrow\normalsize\else
+    \ifbfabstract\normalsize\bfseries\else\footnotesize\fi\fi}
 
   \def\endabstract{\vspace{1.0em}\par\normalsize}
 
@@ -422,11 +473,16 @@
 \newtheorem{definition}{Definition}
 \newtheorem{corollary}{Corollary}
 
-\if@submit
+\if@narrow
+    \onecolumn \sloppy \raggedbottom
+    \hyphenpenalty=50 \exhyphenpenalty=50
+    \tolerance=2000 \emergencystretch=1em
+    \setlength{\tabcolsep}{3pt}
+\else\if@submit
     \onecolumn \sloppy \flushbottom
 \else
     \twocolumn \sloppy \flushbottom
-\fi
+\fi\fi
 
 %% Allows BIOGRAPHY and leaves place for picture
 %%
@@ -455,6 +511,20 @@
 %% Default rules for including pictures
 \RequirePackage{graphicx}
 \DeclareGraphicsRule{*}{eps}{*}{}
+\if@narrow
+  %% images without an explicit width should fit the narrow measure,
+  %% never overflow it
+  \setkeys{Gin}{width=\linewidth,height=0.6\textheight,keepaspectratio}
+\fi
+
+%% \narrowfit{<wide table>}: scales a too-wide object down to the measure in
+%% narrow mode, and does nothing in the other layouts (so the same manuscript
+%% source can be built all three ways)
+\providecommand{\narrowfit}[1]{#1}
+\if@narrow
+  \RequirePackage{adjustbox}
+  \renewcommand{\narrowfit}[1]{\adjustbox{max width=\linewidth}{#1}}
+\fi
 % allow class to find images placed in `theme/` or `figures/`
 \graphicspath{{theme/}{figures/}}
 
@@ -518,6 +588,24 @@
 \fancyfoot[LO]{}
 %\fancyfoot[LE]{}
 \fancyfoot[RO]{\aBioRXiv}}
+
+\if@narrow
+  %% a narrow pane cannot show lead author | logo | date | page-range:
+  %% just the page number, centred
+  %% (the class sets \footskip=10mm below, which would push the footer off a
+  %%  12mm bottom margin -- keep it inside the page)
+  \footskip=5mm \headheight=10pt
+  \fancyhf{}
+  \fancyfoot[C]{\footnotesize\sffamily\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+  \fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\footnotesize\sffamily\thepage}}
+  %% the supplementary files set \lfoot/\rfoot themselves; in narrow mode the
+  %% footer is the page number only, so swallow those calls
+  \renewcommand{\lfoot}[2][]{}
+  \renewcommand{\rfoot}[2][]{}
+  \renewcommand{\lhead}[2][]{}
+  \renewcommand{\rhead}[2][]{}
+\fi
 
 \def\sectionmark#1{\relax}
 
