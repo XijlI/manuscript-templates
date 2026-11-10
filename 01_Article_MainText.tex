@@ -129,12 +129,17 @@ You can put your work in the context of other published work \citep{brenner_uga:
 
 Details of plasmids are usually first.
 Followed by cell biology section.
-We have special units defied for: molar, units, spin speed, electron and Angstrom, i.e. \SI{1}{\Molar} sucrose, which can also be written \SI{1}{\molar} sucrose, \SI{10}{\Units\per\milli\litre} restriction enzyme, centrifuge at \SI{10000}{\gee} or \SI{800}{\rpm}, this at \SI{100}{\kilo\electron}, a resolution of \SI{1.8}{\angstrom}.
+We have special units defined for: molar, units, spin speed, electron and Angstrom, i.e. \SI{1}{\Molar} sucrose, which can also be written \SI{1}{\molar} sucrose, \SI{10}{\Units\per\milli\litre} restriction enzyme, centrifuge at \SI{10000}{\gee} or \SI{800}{\rpm}, this at \SI{100}{\kilo\electron}, a resolution of \SI{1.8}{\angstrom}.
 Otherwise use \texttt{siunitx} for everything else, \SI{10}{\micro\metre} and \SI{37}{\degreeCelsius} and what-not.
+There are some gotchas with using \texttt{siunitx} for units, so check the documentation.
+For example, the unit for minute is \texttt{\textbackslash minute} and not \texttt{\textbackslash min}, which is a reserved word in LaTeX.
+If you are seeing an error in compilation, check the units you are using.
 
-You can use \ce{Na2HPO4} and \ce{H2O}, for chemical names.
+You can use ``chemical entities'' (ce) for chemical formulas, such as \ce{Na2HPO4} and \ce{H2O}.
 
 \subsection*{Cell biology}
+
+The general rule is that the methods subsections should be in the order that the results are presented, and in the order that the experiments were performed.
 
 \lipsum[80]
 
